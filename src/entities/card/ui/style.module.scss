@@ -1,0 +1,72 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 18px;
+	background: linear-gradient(180deg, rgba(38, 31, 24, 0.94), rgba(27, 22, 18, 0.98));
+	box-shadow:
+		0 18px 28px rgba(0, 0, 0, 0.24),
+		inset 0 1px 0 rgba(255, 255, 255, 0.04);
+	cursor: grab;
+}
+
+.size_md {
+	min-height: 146px;
+}
+
+.size_sm {
+	min-height: 92px;
+	padding: 10px 12px;
+	border-radius: 14px;
+}
+
+.selected {
+	outline: 2px solid #ffcf70;
+	transform: translateY(-2px);
+}
+
+.header,
+.tags,
+.stats {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.name {
+	font-size: 15px;
+}
+
+.attack_type,
+.tags span,
+.stats span {
+	font-size: 12px;
+	color: rgba(255, 245, 221, 0.74);
+}
+
+.tags {
+	justify-content: flex-start;
+	flex-wrap: wrap;
+}
+
+.tags span {
+	padding: 4px 8px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.tone_melee {
+	border-color: rgba(214, 103, 63, 0.38);
+}
+
+.tone_range {
+	border-color: rgba(119, 170, 85, 0.38);
+}
+
+.tone_magic {
+	border-color: rgba(111, 98, 201, 0.4);
+}
