@@ -1,0 +1,34 @@
+:root {
+	font-family:
+		"Pretendard Variable",
+		"Pretendard",
+		"SUIT Variable",
+		system-ui,
+		sans-serif;
+	color: #f3efe2;
+	background: #17130f;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	background:
+		radial-gradient(circle at top, rgba(160, 103, 43, 0.18), transparent 30%),
+		linear-gradient(180deg, #221a14 0%, #17130f 100%);
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+}

@@ -1,31 +1,23 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
-import path from 'path';
+import { defineConfig } from 'vite'
+import { devtools } from '@tanstack/devtools-vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: 'build',
-    sourcemap: false, 
-    minify: 'esbuild', 
-    rollupOptions: {
-      output: {
-        manualChunks(id: string | string[]) {
-          if (id.includes('node_modules')) {
-            return 'vendor'; 
-          }
-        },
-      },
-    },
-  },
-  resolve: {
-    //추가
-    alias: [
-      {
-        find: '@src',
-        replacement: path.resolve(__dirname, 'src'),
-      },
-    ],
-  },
-});
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
+
+import viteReact from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+const config = defineConfig({
+  plugins: [
+    devtools(),
+    tsconfigPaths({ projects: ['./tsconfig.json'] }),
+    tailwindcss(),
+    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
+    viteReact(),
+  ],
+  server: {
+    port: 4444
+  }
+})
+
+export default config
