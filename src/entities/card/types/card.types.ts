@@ -5,5 +5,7 @@ export interface Card {
   race: string;
   hp: number;
   dmg: number;
-  atkType: string;
+  atkType: AtkType;
 }
+
+type AtkType = "HELLO" | "BYE";
