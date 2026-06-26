@@ -1,0 +1,47 @@
+.panel {
+	display: grid;
+	gap: 0.65rem;
+	padding: 1.35rem 1.45rem;
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.98);
+	border: 1px solid rgba(127, 118, 118, 0.08);
+	box-shadow: 0 14px 32px rgba(83, 71, 83, 0.08);
+}
+
+.button_stack {
+	display: grid;
+	gap: 0.6rem;
+}
+
+.prepare_button,
+.secondary_button,
+.surrender_button {
+	width: 100%;
+	border: 0;
+	border-radius: 14px;
+	padding: 0.95rem 1rem;
+	font: inherit;
+	font-weight: 800;
+	cursor: pointer;
+	transition: opacity 160ms ease;
+
+	&:disabled {
+		opacity: 0.45;
+		cursor: not-allowed;
+	}
+}
+
+.prepare_button {
+	background: #64d066;
+	color: #fff;
+}
+
+.secondary_button {
+	background: #ececec;
+	color: #202026;
+}
+
+.surrender_button {
+	background: #f84e4e;
+	color: #fff;
+}
