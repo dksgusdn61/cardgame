@@ -1,0 +1,55 @@
+.summary_stack {
+	display: grid;
+	gap: 1rem;
+}
+
+.panel {
+	padding: 0;
+
+	h2,
+	h3,
+	p {
+		margin: 0;
+	}
+
+	p {
+		color: #6f6f76;
+		line-height: 1.55;
+	}
+}
+
+.stats_grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+	margin-top: 1rem;
+
+	> div {
+		padding: 0.75rem 0.8rem;
+		border-radius: 12px;
+		background: #f8f8f8;
+		color: #565661;
+		font-size: 0.94rem;
+		font-weight: 600;
+	}
+}
+
+.summary_section {
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid #efefef;
+}
+
+.trait_list {
+	display: grid;
+	gap: 0.4rem;
+	margin: 1rem 0 0;
+	padding-left: 1rem;
+	color: #5d5d67;
+}
+
+@media (max-width: 720px) {
+	.stats_grid {
+		grid-template-columns: 1fr;
+	}
+}

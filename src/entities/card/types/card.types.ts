@@ -1,11 +1,19 @@
-export interface Card {
-  id: number;
-  img: string;
-  class: string;
-  race: string;
-  hp: number;
-  dmg: number;
-  atkType: AtkType;
+export type AttackType = 'melee' | 'range' | 'magic';
+
+export type CardRace = 'human' | 'elf' | 'orc' | 'demon' | 'undead';
+
+export type CardJob = 'warrior' | 'tank' | 'archer' | 'mage' | 'assassin';
+
+export interface CardDefinition {
+	id: string;
+	name: string;
+	race: CardRace;
+	job: CardJob;
+	attack: number;
+	hp: number;
+	attackType: AttackType;
 }
 
-type AtkType = "HELLO" | "BYE";
+export interface CardInstance extends CardDefinition {
+	instanceId: string;
+}

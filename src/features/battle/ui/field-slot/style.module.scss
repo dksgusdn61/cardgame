@@ -1,0 +1,27 @@
+.field_slot {
+	display: grid;
+	width: 108px;
+	min-height: 151px;
+	flex: 0 0 108px;
+	border-radius: 12px;
+	background: transparent;
+}
+
+.is_over {
+	outline: 3px solid rgba(125, 241, 232, 0.95);
+	outline-offset: 2px;
+}
+
+.is_locked {
+	pointer-events: none;
+}
+
+.empty {
+	border-radius: 12px;
+	min-height: 100%;
+	background: #ececec;
+}
+
+.empty_locked {
+	background: #d9d9d9;
+}
