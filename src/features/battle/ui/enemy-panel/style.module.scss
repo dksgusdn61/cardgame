@@ -31,8 +31,8 @@
 }
 
 .enemy_card_wrap {
-	width: 136px;
-	height: 190px;
+	width: 152px;
+	height: 212px;
 }
 
 .enemy_info {
@@ -56,6 +56,7 @@
 
 .trait_chip {
 	position: relative;
+	outline: none;
 }
 
 .trait_chip span {
@@ -69,34 +70,30 @@
 	font-weight: 700;
 }
 
-.trait_chip:hover .trait_tooltip,
-.trait_chip:focus-within .trait_tooltip {
-	opacity: 1;
-	transform: translateY(0);
-	pointer-events: auto;
-}
-
-.trait_tooltip {
-	position: absolute;
-	left: 0;
-	top: calc(100% + 0.55rem);
-	z-index: 5;
-	min-width: 220px;
-	max-width: 280px;
+.floating_tooltip {
+	position: fixed;
+	z-index: 80;
+	width: min(280px, calc(100vw - 32px));
 	padding: 0.8rem 0.9rem;
 	border: 1px solid rgba(127, 118, 118, 0.12);
 	border-radius: 14px;
 	background: rgba(255, 255, 255, 0.98);
 	box-shadow: 0 18px 36px rgba(83, 71, 83, 0.14);
-	color: #5d5d67;
-	font-size: 0.84rem;
-	line-height: 1.5;
-	opacity: 0;
-	transform: translateY(-6px);
 	pointer-events: none;
-	transition:
-		opacity 150ms ease,
-		transform 150ms ease;
+
+	strong {
+		display: block;
+		margin-bottom: 0.25rem;
+		color: #2a2434;
+		font-size: 0.88rem;
+	}
+
+	p {
+		margin: 0;
+		color: #5d5d67;
+		font-size: 0.84rem;
+		line-height: 1.5;
+	}
 }
 
 .enemy_metrics {
@@ -147,8 +144,8 @@
 	}
 
 	.enemy_card_wrap {
-		width: 136px;
-		height: 190px;
+		width: 152px;
+		height: 212px;
 	}
 
 	.enemy_metrics {

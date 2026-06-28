@@ -24,6 +24,7 @@ export interface DungeonRunState {
 	turn: number;
 	currentEnemyHp: number;
 	currentLegionHp: number | null;
+	currentLegionMaxHp: number | null;
 	logs: TurnLogEntry[];
 	statusMessage: string;
 }

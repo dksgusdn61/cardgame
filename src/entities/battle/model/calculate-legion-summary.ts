@@ -1,4 +1,5 @@
 import type { CardInstance } from '@/entities/card/types/card.types';
+import { BASE_LEGION_HP } from '@/entities/battle/model/battle-balance';
 import type { EnemyUnit, LegionSummary } from '@/entities/battle/types/battle.types';
 import { calculateSynergyBonuses } from '@/entities/synergy/model/calculate-synergy';
 
@@ -65,7 +66,7 @@ export const calculateLegionSummary = (
 	const finalAttack = Math.round(
 		adjustedAttack * (1 + finalSynergies.bonuses.attackRate) * (1 + finalSynergies.bonuses.finalDamageRate),
 	);
-	const maxHp = baseHp + finalSynergies.bonuses.maxHpFlat;
+	const maxHp = BASE_LEGION_HP + finalSynergies.bonuses.maxHpFlat;
 	const recoveryPerTurn = Math.round(baseRecovery * (1 + finalSynergies.bonuses.recoveryRate));
 
 	return {

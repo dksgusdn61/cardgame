@@ -7,9 +7,15 @@ interface Props {
 	field: Array<CardInstance | null>;
 	unlockedSlotCount: number;
 	activeDragCardId?: string;
+	isInteractionLocked?: boolean;
 }
 
-const FieldZone = ({ field, unlockedSlotCount, activeDragCardId }: Props) => {
+const FieldZone = ({
+	field,
+	unlockedSlotCount,
+	activeDragCardId,
+	isInteractionLocked = false,
+}: Props) => {
 	return (
 		<section className={styles.field_zone}>
 			<div className={styles.field_grid}>
@@ -20,6 +26,7 @@ const FieldZone = ({ field, unlockedSlotCount, activeDragCardId }: Props) => {
 						card={card}
 						isLocked={isLockedFieldSlot(index, unlockedSlotCount)}
 						activeDragCardId={activeDragCardId}
+						isInteractionLocked={isInteractionLocked}
 					/>
 				))}
 			</div>

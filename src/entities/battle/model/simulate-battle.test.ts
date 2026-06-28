@@ -27,4 +27,26 @@ describe('simulateBattle', () => {
 		expect(result.turns).toBe(2);
 		expect(result.remainingLegionHp).toBeGreaterThan(0);
 	});
+
+	it('applies enemy trait modifiers during simulation', () => {
+		const legion: LegionSummary = {
+			deployedCards: [],
+			baseAttack: 80,
+			baseHp: 120,
+			baseRecovery: 12,
+			finalAttack: 90,
+			maxHp: 260,
+			recoveryPerTurn: 20,
+			dominantAttackType: 'melee',
+			damageReductionRate: 0,
+			antiHealRate: 0,
+			activeSynergies: [],
+			raceStreaks: {},
+			jobStreaks: {},
+		};
+
+		const result = simulateBattle(legion, enemyCatalog[2]);
+
+		expect(result.logs[0]?.legionHpAfterRecovery - result.logs[0]?.legionHpAfterAttack).toBe(15);
+	});
 });

@@ -25,7 +25,7 @@
 .hand_cards {
 	display: flex;
 	align-items: flex-start;
-	min-height: 175px;
+	min-height: 198px;
 	flex: 0 0 auto;
 	width: max-content;
 	min-width: 100%;
@@ -34,8 +34,8 @@
 
 .hand_card_wrap {
 	position: relative;
-	width: 108px;
-	height: 151px;
+	width: 124px;
+	height: 173px;
 	flex: 0 0 auto;
 	perspective: 1200px;
 }
@@ -83,8 +83,8 @@
 
 .deck_stack {
 	position: relative;
-	width: 108px;
-	height: 151px;
+	width: 124px;
+	height: 173px;
 }
 
 .deck_shadow,

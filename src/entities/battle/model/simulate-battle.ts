@@ -1,4 +1,9 @@
 import type { EnemyUnit, BattleSimulationResult, LegionSummary } from '@/entities/battle/types/battle.types';
+import {
+	getEffectiveEnemyAttack,
+	getEffectiveLegionRecovery,
+	getEffectivePlayerDamage,
+} from '@/entities/battle/model/enemy-effects';
 
 const MAX_TURNS = 8;
 
@@ -15,7 +20,8 @@ export const simulateBattle = (
 		currentEnemyHp = Math.min(enemy.hp, currentEnemyHp + enemyRecovery);
 		const enemyHpAfterHeal = currentEnemyHp;
 
-		currentEnemyHp = Math.max(0, currentEnemyHp - legion.finalAttack);
+		const playerDamage = getEffectivePlayerDamage(enemy, turn, legion);
+		currentEnemyHp = Math.max(0, currentEnemyHp - playerDamage);
 		const enemyHpAfterAttack = currentEnemyHp;
 
 		if (currentEnemyHp === 0) {
@@ -36,7 +42,9 @@ export const simulateBattle = (
 			};
 		}
 
-		const incomingDamage = Math.round(enemy.attack * (1 - legion.damageReductionRate));
+		const incomingDamage = Math.round(
+			getEffectiveEnemyAttack(enemy, turn, legion) * (1 - legion.damageReductionRate),
+		);
 		currentLegionHp = Math.max(0, currentLegionHp - incomingDamage);
 		const legionHpAfterAttack = currentLegionHp;
 
@@ -58,7 +66,10 @@ export const simulateBattle = (
 			};
 		}
 
-		currentLegionHp = Math.min(legion.maxHp, currentLegionHp + legion.recoveryPerTurn);
+		currentLegionHp = Math.min(
+			legion.maxHp,
+			currentLegionHp + getEffectiveLegionRecovery(enemy, legion),
+		);
 		logs.push({
 			turn,
 			enemyHpAfterHeal,

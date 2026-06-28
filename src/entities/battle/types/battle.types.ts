@@ -1,7 +1,10 @@
 import type { AttackType, CardInstance, CardJob, CardRace } from '@/entities/card/types/card.types';
 import type { SynergyActivation } from '@/entities/synergy/types/synergy.type';
 
+export type EnemyTraitId = 'stone-flesh' | 'piercing-throw' | 'plague-ritual';
+
 export interface EnemyTrait {
+	id: EnemyTraitId;
 	name: string;
 	description: string;
 }

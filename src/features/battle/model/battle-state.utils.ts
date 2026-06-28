@@ -1,4 +1,5 @@
 import createStarterDeck from '@/entities/card/model/create-starter-deck';
+import { getWaveScaledEnemy } from '@/entities/battle/model/battle-balance';
 import enemyCatalog from '@/entities/battle/model/enemy-catalog';
 import type { CardInstance } from '@/entities/card/types/card.types';
 import type { BattleState, SelectiveDrawState } from '@/features/battle/model/battle-state.types';
@@ -20,7 +21,15 @@ export const createInitialBattleState = (): BattleState => ({
 	hand: [],
 	field: createEmptyField(),
 	discard: [],
-	enemy: enemyCatalog[0],
+	enemy: getWaveScaledEnemy(enemyCatalog[0], 1),
+});
+
+export const createInitialBattleStateFromDeck = (deck: CardInstance[]): BattleState => ({
+	deck,
+	hand: [],
+	field: createEmptyField(),
+	discard: [],
+	enemy: getWaveScaledEnemy(enemyCatalog[0], 1),
 });
 
 export const drawCardsToHand = (state: BattleState, count: number): BattleState => {

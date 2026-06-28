@@ -14,11 +14,11 @@ const raceThresholds: Record<CardRace, number[]> = {
 };
 
 const jobThresholds: Record<CardJob, number[]> = {
-	warrior: [1, 3, 5],
-	tank: [1, 3, 5],
-	archer: [1, 3, 5],
-	mage: [1, 3, 5],
-	assassin: [1, 3, 5],
+	warrior: [2, 3, 5],
+	tank: [2, 3, 5],
+	archer: [2, 3, 5],
+	mage: [2, 3, 5],
+	assassin: [2, 3, 5],
 };
 
 const getHighestThreshold = (count: number, thresholds: number[]) => {
@@ -81,15 +81,15 @@ const getRaceBonuses = (
 	switch (race) {
 		case 'human':
 			if (threshold === 2) {
-				return { attackRate: 0, finalDamageRate: 0, maxHpFlat: 60, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +60' };
+				return { attackRate: 0, finalDamageRate: 0, maxHpFlat: 30, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +30' };
 			}
 			if (threshold === 4) {
-				return { attackRate: 0, finalDamageRate: 0.06, maxHpFlat: 140, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +140, 최종 피해 +6%' };
+				return { attackRate: 0, finalDamageRate: 0.06, maxHpFlat: 80, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +80, 최종 피해 +6%' };
 			}
 			if (threshold === 6) {
-				return { attackRate: 0, finalDamageRate: 0.12, maxHpFlat: 240, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +240, 최종 피해 +12%' };
+				return { attackRate: 0, finalDamageRate: 0.12, maxHpFlat: 140, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +140, 최종 피해 +12%' };
 			}
-			return { attackRate: 0, finalDamageRate: 0.2, maxHpFlat: 380, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +380, 최종 피해 +20%' };
+			return { attackRate: 0, finalDamageRate: 0.2, maxHpFlat: 220, recoveryRate: 0, damageReductionRate: 0, antiHealRate: 0, description: '군단 최대 체력 +220, 최종 피해 +20%' };
 		case 'elf': {
 			const attackRate =
 				context.attackType === 'range'
@@ -158,8 +158,8 @@ const getRaceBonuses = (
 			return {
 				attackRate: 0,
 				finalDamageRate: threshold === 2 || threshold === 4 ? -0.05 : 0,
-				maxHpFlat: threshold === 8 ? 120 : 0,
-				recoveryRate: threshold === 2 ? 0.4 : threshold === 4 ? 0.8 : threshold === 6 ? 1.4 : 2.2,
+				maxHpFlat: threshold === 8 ? 40 : 0,
+				recoveryRate: threshold === 2 ? 0.2 : threshold === 4 ? 0.4 : threshold === 6 ? 0.7 : 1.1,
 				damageReductionRate: 0,
 				antiHealRate: 0,
 				description: '턴 종료 회복량 증가',
@@ -186,14 +186,14 @@ const getJobBonuses = (
 				recoveryRate: 0,
 				damageReductionRate: 0,
 				antiHealRate: 0,
-				jobAttackRate: threshold === 1 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
+				jobAttackRate: threshold === 2 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
 				description: '전사 카드 공격력 증가, 근접 조합 추가 피해',
 			};
 		case 'tank':
 			return {
 				attackRate: 0,
 				finalDamageRate: 0,
-				maxHpFlat: threshold === 1 ? 40 : threshold === 3 ? 100 : 220,
+				maxHpFlat: threshold === 2 ? 40 : threshold === 3 ? 100 : 220,
 				recoveryRate: threshold === 3 ? 0.15 : threshold === 5 ? 0.35 : 0,
 				damageReductionRate: threshold === 5 ? 0.08 : 0,
 				antiHealRate: 0,
@@ -209,7 +209,7 @@ const getJobBonuses = (
 				recoveryRate: 0,
 				damageReductionRate: 0,
 				antiHealRate: 0,
-				jobAttackRate: threshold === 1 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
+				jobAttackRate: threshold === 2 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
 				description: '궁수 카드 공격력 증가, 원거리 조합 추가 피해',
 			};
 		case 'mage':
@@ -222,7 +222,7 @@ const getJobBonuses = (
 				recoveryRate: 0,
 				damageReductionRate: 0,
 				antiHealRate: 0,
-				jobAttackRate: threshold === 1 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
+				jobAttackRate: threshold === 2 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
 				description: '마법사 카드 공격력 증가, 언데드 상대로 추가 피해',
 			};
 		case 'assassin':
@@ -238,7 +238,7 @@ const getJobBonuses = (
 				recoveryRate: 0,
 				damageReductionRate: 0,
 				antiHealRate: 0,
-				jobAttackRate: threshold === 1 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
+				jobAttackRate: threshold === 2 ? 0.1 : threshold === 3 ? 0.2 : 0.35,
 				description: '암살자 카드 공격력 증가, 후방 직업 상대로 추가 피해',
 			};
 	}

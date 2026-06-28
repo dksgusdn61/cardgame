@@ -12,6 +12,7 @@ const enemyCatalog: EnemyUnit[] = [
 		job: 'warrior',
 		traits: [
 			{
+				id: 'stone-flesh',
 				name: '단단한 살점',
 				description: '첫 2턴 동안 받는 피해가 10% 감소합니다.',
 			},
@@ -28,6 +29,7 @@ const enemyCatalog: EnemyUnit[] = [
 		job: 'archer',
 		traits: [
 			{
+				id: 'piercing-throw',
 				name: '관통 투척',
 				description: '플레이어 군단 공격 타입이 원거리가 아니면 추가 피해를 12 더 입힙니다.',
 			},
@@ -44,6 +46,7 @@ const enemyCatalog: EnemyUnit[] = [
 		job: 'mage',
 		traits: [
 			{
+				id: 'plague-ritual',
 				name: '역병 의식',
 				description: '플레이어 군단의 턴 종료 회복량을 25% 감소시킵니다.',
 			},

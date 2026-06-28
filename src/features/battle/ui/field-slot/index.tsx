@@ -8,16 +8,23 @@ interface Props {
 	card: CardInstance | null;
 	isLocked?: boolean;
 	activeDragCardId?: string;
+	isInteractionLocked?: boolean;
 }
 
-const FieldSlot = ({ index, card, isLocked = false, activeDragCardId }: Props) => {
+const FieldSlot = ({
+	index,
+	card,
+	isLocked = false,
+	activeDragCardId,
+	isInteractionLocked = false,
+}: Props) => {
 	const { setNodeRef, isOver } = useDroppable({
 		id: `field-slot-${index}`,
 		data: {
 			zone: 'field',
 			index,
 		},
-		disabled: isLocked,
+		disabled: isLocked || isInteractionLocked,
 	});
 
 	return (
@@ -26,7 +33,12 @@ const FieldSlot = ({ index, card, isLocked = false, activeDragCardId }: Props) =
 			className={`${styles.field_slot} ${isLocked ? styles.is_locked : ''} ${isOver ? styles.is_over : ''}`}
 		>
 			{card ? (
-				<CardTile card={card} zone="field" isDimmed={card.instanceId === activeDragCardId} />
+				<CardTile
+					card={card}
+					zone="field"
+					isDimmed={card.instanceId === activeDragCardId}
+					isDraggable={!isInteractionLocked}
+				/>
 			) : (
 				<div className={`${styles.empty} ${isLocked ? styles.empty_locked : ''}`} />
 			)}

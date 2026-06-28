@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BASE_LEGION_HP } from '@/entities/battle/model/battle-balance';
 import { calculateLegionSummary } from '@/entities/battle/model/calculate-legion-summary';
 import enemyCatalog from '@/entities/battle/model/enemy-catalog';
 import type { CardInstance } from '@/entities/card/types/card.types';
@@ -16,7 +17,7 @@ const createCard = (overrides: Partial<CardInstance>): CardInstance => ({
 });
 
 describe('calculateLegionSummary', () => {
-	it('computes human and warrior streak bonuses from contiguous cards', () => {
+	it('computes human and warrior streak bonuses only when job streak reaches two', () => {
 		const field = [
 			createCard({ instanceId: 'a', race: 'human', job: 'warrior', attack: 20, hp: 40 }),
 			createCard({ instanceId: 'b', race: 'human', job: 'warrior', attack: 20, hp: 40 }),
@@ -26,8 +27,8 @@ describe('calculateLegionSummary', () => {
 		const summary = calculateLegionSummary(field, enemyCatalog[0]);
 
 		expect(summary.baseAttack).toBe(58);
-		expect(summary.maxHp).toBe(170);
-		expect(summary.activeSynergies.map((synergy) => synergy.key)).toEqual(['human', 'warrior', 'archer']);
+		expect(summary.maxHp).toBe(BASE_LEGION_HP + 30);
+		expect(summary.activeSynergies.map((synergy) => synergy.key)).toEqual(['human', 'warrior']);
 	});
 
 	it('applies undead recovery bonuses to legion recovery', () => {
@@ -39,7 +40,32 @@ describe('calculateLegionSummary', () => {
 		const summary = calculateLegionSummary(field, enemyCatalog[0]);
 
 		expect(summary.baseRecovery).toBe(10);
-		expect(summary.recoveryPerTurn).toBe(14);
+		expect(summary.recoveryPerTurn).toBe(12);
+	});
+
+	it('scales base recovery from the total hp of deployed cards', () => {
+		const field = [
+			createCard({ instanceId: 'h1', hp: 30 }),
+			createCard({ instanceId: 'h2', hp: 40 }),
+			createCard({ instanceId: 'h3', hp: 50 }),
+			null,
+		];
+		const summary = calculateLegionSummary(field, enemyCatalog[0]);
+
+		expect(summary.baseHp).toBe(120);
+		expect(summary.baseRecovery).toBe(12);
+	});
+
+	it('uses fixed legion base hp instead of deployed card hp total', () => {
+		const field = [
+			createCard({ instanceId: 'fixed-1', hp: 30 }),
+			createCard({ instanceId: 'fixed-2', hp: 40 }),
+			null,
+		];
+		const summary = calculateLegionSummary(field, enemyCatalog[0]);
+
+		expect(summary.baseHp).toBe(70);
+		expect(summary.maxHp).toBe(BASE_LEGION_HP + 30);
 	});
 
 	it('breaks attack type ties by total attack among tied card groups', () => {

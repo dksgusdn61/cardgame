@@ -13,8 +13,9 @@
 	place-items: center;
 }
 
-.start_button {
-	padding: 0.7rem 1.2rem;
+.deck_message {
+	margin: 0;
+	text-align: center;
 }
 
 .battle_workspace {
@@ -41,6 +42,7 @@
 }
 
 .battle_board {
+	position: relative;
 	display: grid;
 	gap: 1rem;
 	align-content: start;
@@ -61,8 +63,8 @@
 }
 
 .drag_overlay_card {
-	width: 108px;
-	height: 151px;
+	width: 124px;
+	height: 173px;
 	pointer-events: none;
 }
 

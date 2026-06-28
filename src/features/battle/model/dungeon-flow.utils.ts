@@ -1,8 +1,17 @@
+import {
+	getWaveScaledEnemy,
+} from '@/entities/battle/model/battle-balance';
+import {
+	getEffectiveEnemyAttack,
+	getEffectiveLegionRecovery,
+	getEffectivePlayerDamage,
+} from '@/entities/battle/model/enemy-effects';
 import enemyCatalog from '@/entities/battle/model/enemy-catalog';
 import { calculateLegionSummary } from '@/entities/battle/model/calculate-legion-summary';
 import type { CardInstance } from '@/entities/card/types/card.types';
 import {
 	createInitialBattleState,
+	createInitialBattleStateFromDeck,
 	drawCardsToHand,
 	startSelectiveDraw,
 } from '@/features/battle/model/battle-state.utils';
@@ -15,6 +24,9 @@ import type {
 const getFilledFieldCards = (field: Array<CardInstance | null>) =>
 	field.filter((card): card is CardInstance => card !== null);
 
+const WAVE_CLEAR_FIXED_RECOVERY = 30;
+const WAVE_CLEAR_MISSING_HP_RECOVERY_RATE = 0.35;
+
 export const hasDeployedCard = (field: Array<CardInstance | null>) => getFilledFieldCards(field).length > 0;
 
 export const createIdleRunState = (): DungeonRunState => ({
@@ -23,13 +35,16 @@ export const createIdleRunState = (): DungeonRunState => ({
 	turn: 1,
 	currentEnemyHp: 0,
 	currentLegionHp: null,
+	currentLegionMaxHp: null,
 	logs: [],
 	statusMessage: '게임을 시작하면 첫 번째 몬스터와 전투가 시작됩니다.',
 });
 
-export const createInitialDungeonSession = (): ActiveBattleSession => {
-	const initialBattleState = createInitialBattleState();
-	const drawnBattleState = drawCardsToHand(initialBattleState, 7);
+export const createInitialDungeonSession = (deck?: CardInstance[]): ActiveBattleSession => {
+	const initialBattleState = deck
+		? createInitialBattleStateFromDeck(deck)
+		: createInitialBattleState();
+	const drawnBattleState = drawCardsToHand(initialBattleState, 4);
 
 	return {
 		battleState: drawnBattleState,
@@ -39,6 +54,7 @@ export const createInitialDungeonSession = (): ActiveBattleSession => {
 			turn: 1,
 			currentEnemyHp: drawnBattleState.enemy.hp,
 			currentLegionHp: null,
+			currentLegionMaxHp: null,
 			logs: [],
 			statusMessage: '첫 웨이브입니다. 최소 1장을 필드에 배치한 뒤 턴을 진행하세요.',
 		},
@@ -47,7 +63,7 @@ export const createInitialDungeonSession = (): ActiveBattleSession => {
 
 export const startNextWaveWithDraw = (
 	session: ActiveBattleSession,
-	drawType: 'draw_three' | 'pick_two',
+	drawType: 'draw_three' | 'pick_two' | 'recover_missing_hp',
 ): ActiveBattleSession => {
 	const nextWaveIndex = session.runState.waveIndex + 1;
 	const nextEnemy = enemyCatalog[nextWaveIndex];
@@ -65,26 +81,46 @@ export const startNextWaveWithDraw = (
 
 	const battleStateWithEnemy = {
 		...session.battleState,
-		enemy: nextEnemy,
+		enemy: getWaveScaledEnemy(nextEnemy, nextWaveIndex + 1),
 	};
 	const nextBattleState =
 		drawType === 'draw_three'
 			? drawCardsToHand(battleStateWithEnemy, 3)
-			: startSelectiveDraw(battleStateWithEnemy, 5, 2);
+			: drawType === 'pick_two'
+				? startSelectiveDraw(battleStateWithEnemy, 5, 2)
+				: battleStateWithEnemy;
+	const recoveredLegionHp =
+		drawType === 'recover_missing_hp'
+			? Math.min(
+					session.runState.currentLegionMaxHp ?? session.runState.currentLegionHp ?? 0,
+					(session.runState.currentLegionHp ?? 0) +
+						Math.round(
+							((session.runState.currentLegionMaxHp ?? session.runState.currentLegionHp ?? 0) -
+								(session.runState.currentLegionHp ?? 0)) *
+								WAVE_CLEAR_MISSING_HP_RECOVERY_RATE,
+						),
+				)
+			: session.runState.currentLegionHp;
 
 	return {
 		battleState: nextBattleState,
 		runState: {
 			...session.runState,
-			phase: drawType === 'draw_three' ? 'turn_ready' : 'wave_setup',
+			phase:
+				drawType === 'pick_two'
+					? 'wave_setup'
+					: 'turn_ready',
 			waveIndex: nextWaveIndex,
 			turn: 1,
-			currentEnemyHp: nextEnemy.hp,
+			currentEnemyHp: getWaveScaledEnemy(nextEnemy, nextWaveIndex + 1).hp,
+			currentLegionHp: recoveredLegionHp,
 			logs: [],
 			statusMessage:
 				drawType === 'draw_three'
 					? `${nextWaveIndex + 1}번째 몬스터가 등장했습니다. 배치를 조정한 뒤 턴을 진행하세요.`
-					: `${nextWaveIndex + 1}번째 몬스터 전투 준비입니다. 5장 중 2장을 고르세요.`,
+					: drawType === 'pick_two'
+						? `${nextWaveIndex + 1}번째 몬스터 전투 준비입니다. 5장 중 2장을 고르세요.`
+						: `${nextWaveIndex + 1}번째 몬스터 전투 준비입니다. 잃은 체력의 35%를 회복했습니다.`,
 		},
 	};
 };
@@ -119,7 +155,12 @@ export const resolveDungeonTurnWithoutDraw = (session: ActiveBattleSession): Act
 	);
 	const enemyRecovery = Math.round(battleState.enemy.recovery * (1 - legionSummary.antiHealRate));
 	const enemyHpAfterRecovery = Math.min(battleState.enemy.hp, runState.currentEnemyHp + enemyRecovery);
-	const enemyHpAfterAttack = Math.max(0, enemyHpAfterRecovery - legionSummary.finalAttack);
+	const playerDamage = getEffectivePlayerDamage(battleState.enemy, runState.turn, legionSummary);
+	const enemyHpAfterAttack = Math.max(0, enemyHpAfterRecovery - playerDamage);
+	const legionHpAfterWaveClearRecovery = Math.min(
+		legionSummary.maxHp,
+		currentLegionHp + WAVE_CLEAR_FIXED_RECOVERY,
+	);
 
 	if (enemyHpAfterAttack === 0) {
 		return {
@@ -129,36 +170,45 @@ export const resolveDungeonTurnWithoutDraw = (session: ActiveBattleSession): Act
 				phase:
 					runState.waveIndex === enemyCatalog.length - 1 ? 'victory' : 'wave_cleared',
 				currentEnemyHp: 0,
-				currentLegionHp,
+				currentLegionHp:
+					runState.waveIndex === enemyCatalog.length - 1
+						? currentLegionHp
+						: legionHpAfterWaveClearRecovery,
+				currentLegionMaxHp: legionSummary.maxHp,
 				logs: [
 					{
 						turn: runState.turn,
-						playerDamage: legionSummary.finalAttack,
+						playerDamage,
 						enemyDamage: 0,
 						enemyRecovery,
-						legionRecovery: 0,
+						legionRecovery:
+							runState.waveIndex === enemyCatalog.length - 1
+								? 0
+								: legionHpAfterWaveClearRecovery - currentLegionHp,
 						enemyHpAfterTurn: 0,
-						legionHpAfterTurn: currentLegionHp,
+						legionHpAfterTurn:
+							runState.waveIndex === enemyCatalog.length - 1
+								? currentLegionHp
+								: legionHpAfterWaveClearRecovery,
 					},
 					...runState.logs,
 				],
 				statusMessage:
 					runState.waveIndex === enemyCatalog.length - 1
 						? '마지막 몬스터를 쓰러뜨렸습니다. 던전 클리어입니다.'
-						: `${runState.waveIndex + 1}번째 몬스터를 처치했습니다. 다음 웨이브 드로우를 선택하세요.`,
+						: `${runState.waveIndex + 1}번째 몬스터를 처치했습니다. 30 회복 후 다음 웨이브 보상을 선택하세요.`,
 			},
 		};
 	}
 
-	const incomingDamage = Math.round(
-		battleState.enemy.attack * (1 - legionSummary.damageReductionRate),
-	);
+	const incomingAttack = getEffectiveEnemyAttack(battleState.enemy, runState.turn, legionSummary);
+	const incomingDamage = Math.round(incomingAttack * (1 - legionSummary.damageReductionRate));
 	const legionHpAfterEnemyAttack = Math.max(0, currentLegionHp - incomingDamage);
 
 	if (legionHpAfterEnemyAttack === 0) {
 		const defeatLog: TurnLogEntry = {
 			turn: runState.turn,
-			playerDamage: legionSummary.finalAttack,
+			playerDamage,
 			enemyDamage: incomingDamage,
 			enemyRecovery,
 			legionRecovery: 0,
@@ -173,23 +223,24 @@ export const resolveDungeonTurnWithoutDraw = (session: ActiveBattleSession): Act
 				phase: 'defeat',
 				currentEnemyHp: enemyHpAfterAttack,
 				currentLegionHp: 0,
+				currentLegionMaxHp: legionSummary.maxHp,
 				logs: [defeatLog, ...runState.logs],
 				statusMessage: '군단의 체력이 모두 소진되었습니다. 던전 실패입니다.',
 			},
 		};
 	}
 
+	const legionRecovery = getEffectiveLegionRecovery(battleState.enemy, legionSummary);
 	const legionHpAfterRecovery = Math.min(
 		legionSummary.maxHp,
-		legionHpAfterEnemyAttack + legionSummary.recoveryPerTurn,
+		legionHpAfterEnemyAttack + legionRecovery,
 	);
-	const battleStateAfterDraw = drawCardsToHand(battleState, 1);
 	const nextLog: TurnLogEntry = {
 		turn: runState.turn,
-		playerDamage: legionSummary.finalAttack,
+		playerDamage,
 		enemyDamage: incomingDamage,
 		enemyRecovery,
-		legionRecovery: legionSummary.recoveryPerTurn,
+		legionRecovery,
 		enemyHpAfterTurn: enemyHpAfterAttack,
 		legionHpAfterTurn: legionHpAfterRecovery,
 	};
@@ -202,6 +253,7 @@ export const resolveDungeonTurnWithoutDraw = (session: ActiveBattleSession): Act
 			turn: runState.turn + 1,
 			currentEnemyHp: enemyHpAfterAttack,
 			currentLegionHp: legionHpAfterRecovery,
+			currentLegionMaxHp: legionSummary.maxHp,
 			logs: [nextLog, ...runState.logs],
 			statusMessage: `${runState.turn}턴이 종료되었습니다.`,
 		},

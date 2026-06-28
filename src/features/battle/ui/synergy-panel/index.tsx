@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, FocusEvent, MouseEvent } from 'react';
 import type { SynergyActivation } from '@/entities/synergy/types/synergy.type';
 import type { LegionSummary } from '@/entities/battle/types/battle.types';
 import { getSynergyMeta } from '@/entities/synergy/model/synergy-meta';
@@ -14,6 +14,12 @@ interface RenderedSynergyItem {
 	state: 'entering' | 'active' | 'exiting';
 }
 
+interface FloatingTooltipState {
+	left: number;
+	top: number;
+	synergy: SynergyActivation;
+}
+
 const SynergyPanel = ({ legionSummary }: Props) => {
 	const removalTimeoutsRef = useRef<Map<string, number>>(new Map());
 	const activeKeys = useMemo(
@@ -24,6 +30,26 @@ const SynergyPanel = ({ legionSummary }: Props) => {
 		[legionSummary.activeSynergies],
 	);
 	const [renderedSynergies, setRenderedSynergies] = useState<RenderedSynergyItem[]>([]);
+	const [floatingTooltip, setFloatingTooltip] = useState<FloatingTooltipState | null>(null);
+
+	const openTooltip = (
+		event: MouseEvent<HTMLElement> | FocusEvent<HTMLElement>,
+		synergy: SynergyActivation,
+	) => {
+		const rect = event.currentTarget.getBoundingClientRect();
+		const tooltipWidth = 320;
+		const left = Math.min(
+			window.innerWidth - tooltipWidth - 16,
+			Math.max(16, rect.left + rect.width / 2 - tooltipWidth / 2),
+		);
+		const top = Math.max(16, rect.bottom + 12);
+
+		setFloatingTooltip({
+			left,
+			top,
+			synergy,
+		});
+	};
 
 	useEffect(() => {
 		setRenderedSynergies((current) => {
@@ -138,6 +164,11 @@ const SynergyPanel = ({ legionSummary }: Props) => {
 									'--synergy-delay': `${index * 70}ms`,
 								} as CSSProperties
 							}
+							onMouseEnter={(event) => openTooltip(event, synergy)}
+							onMouseLeave={() => setFloatingTooltip(null)}
+							onFocus={(event) => openTooltip(event, synergy)}
+							onBlur={() => setFloatingTooltip(null)}
+							tabIndex={0}
 						>
 							<div className={styles.synergy_main}>
 								<div className={styles.synergy_label}>
@@ -160,15 +191,32 @@ const SynergyPanel = ({ legionSummary }: Props) => {
 									))}
 								</div>
 							</div>
-							<div className={styles.synergy_tooltip}>
+						</article>
+					);
+				})}
+			</div>
+			{floatingTooltip ? (
+				<div
+					className={styles.floating_tooltip}
+					style={{ left: `${floatingTooltip.left}px`, top: `${floatingTooltip.top}px` }}
+				>
+					{(() => {
+						const meta = getSynergyMeta(
+							floatingTooltip.synergy.category,
+							floatingTooltip.synergy.key,
+						);
+						return (
+							<>
 								<p className={styles.synergy_tooltip_title}>{meta.label} 시너지</p>
-								<p className={styles.synergy_tooltip_text}>{synergy.description}</p>
+								<p className={styles.synergy_tooltip_text}>
+									{floatingTooltip.synergy.description}
+								</p>
 								<ul className={styles.synergy_stage_list}>
 									{meta.stages.map((stage) => (
 										<li
 											key={stage.threshold}
 											className={
-												stage.threshold === synergy.threshold
+												stage.threshold === floatingTooltip.synergy.threshold
 													? `${styles.synergy_stage_item} ${styles.is_active}`
 													: styles.synergy_stage_item
 											}
@@ -178,11 +226,11 @@ const SynergyPanel = ({ legionSummary }: Props) => {
 										</li>
 									))}
 								</ul>
-							</div>
-						</article>
-					);
-				})}
-			</div>
+							</>
+						);
+					})()}
+				</div>
+			) : null}
 		</section>
 	);
 };

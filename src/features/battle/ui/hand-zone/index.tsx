@@ -8,14 +8,22 @@ interface Props {
 	deckCount: number;
 	recentlyDrawnCardIds: string[];
 	activeDragCardId?: string;
+	isInteractionLocked?: boolean;
 }
 
-const HandZone = ({ cards, deckCount, recentlyDrawnCardIds, activeDragCardId }: Props) => {
+const HandZone = ({
+	cards,
+	deckCount,
+	recentlyDrawnCardIds,
+	activeDragCardId,
+	isInteractionLocked = false,
+}: Props) => {
 	const { setNodeRef, isOver } = useDroppable({
 		id: 'hand-zone',
 		data: {
 			zone: 'hand',
 		},
+		disabled: isInteractionLocked,
 	});
 
 	return (
@@ -35,6 +43,7 @@ const HandZone = ({ cards, deckCount, recentlyDrawnCardIds, activeDragCardId }: 
 									card={card}
 									zone="hand"
 									isDimmed={card.instanceId === activeDragCardId}
+									isDraggable={!isInteractionLocked}
 								/>
 							</div>
 						))}

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { jobColorMap, raceColorMap } from '@/entities/card/model/card-appearance';
 import { getJobLabel, getRaceLabel } from '@/entities/card/model/card-label';
@@ -24,7 +23,6 @@ const CardTile = ({
 	isDraggable = true,
 	isDimmed = false,
 }: Props) => {
-	const [isDetailVisible, setIsDetailVisible] = useState(false);
 	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
 		id: card.instanceId,
 		data: {
@@ -34,10 +32,6 @@ const CardTile = ({
 	});
 
 	const handleClick = () => {
-		if (size === 'small') {
-			setIsDetailVisible((current) => !current);
-		}
-
 		onClick?.();
 	};
 
@@ -47,7 +41,7 @@ const CardTile = ({
 			type="button"
 			className={`${styles.card} ${
 				size === 'large' ? styles.is_large : styles.is_small
-			} ${zone === 'field' ? styles.is_field : styles.is_hand} ${isSelected ? styles.is_selected : ''} ${isDragging ? styles.is_dragging : ''} ${isDetailVisible ? styles.is_pressing : ''} ${isDimmed ? styles.is_dimmed : ''}`}
+			} ${zone === 'field' ? styles.is_field : styles.is_hand} ${isSelected ? styles.is_selected : ''} ${isDragging ? styles.is_dragging : ''} ${isDimmed ? styles.is_dimmed : ''}`}
 			style={
 				{
 					...(transform
@@ -79,18 +73,6 @@ const CardTile = ({
 					<b>{card.name}</b>
 				</div>
 			</div>
-			{size === 'small' && isDetailVisible ? (
-				<div className={styles.press_detail}>
-					<div className={styles.stat_block}>
-						<span>HP</span>
-						<strong>{card.hp}</strong>
-					</div>
-					<div className={styles.stat_block}>
-						<span>ATK</span>
-						<strong>{card.attack}</strong>
-					</div>
-				</div>
-			) : null}
 		</button>
 	);
 };
