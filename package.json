@@ -43,6 +43,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
       "esbuild",
       "lightningcss"
     ]
