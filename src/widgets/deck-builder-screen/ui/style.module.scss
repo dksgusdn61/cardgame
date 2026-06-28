@@ -1,0 +1,66 @@
+.deck_builder_layout {
+	min-height: 100vh;
+	background: #ffffff;
+	padding: 1.75rem 2rem 3rem;
+}
+
+.deck_builder_panel {
+	display: grid;
+	gap: 2rem;
+}
+
+.message {
+	margin: 0;
+	color: #4b5563;
+}
+
+.page_header {
+	display: flex;
+	align-items: center;
+}
+
+.back_link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	color: #111111;
+	text-decoration: none;
+	font-size: 1.6rem;
+	font-weight: 700;
+}
+
+.divider {
+	height: 1px;
+	background: #e8e8e8;
+}
+
+.action_row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.save_button {
+	padding: 0.7rem 1rem;
+	border: 1px solid #111111;
+	background: #ffffff;
+	color: #111111;
+	font: inherit;
+	cursor: pointer;
+}
+
+.save_button:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+@media (max-width: 720px) {
+	.deck_builder_layout {
+		padding: 1rem 1rem 2rem;
+	}
+
+	.back_link {
+		font-size: 1.3rem;
+	}
+}

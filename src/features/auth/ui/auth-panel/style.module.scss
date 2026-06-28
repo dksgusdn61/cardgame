@@ -1,0 +1,46 @@
+.panel {
+	min-height: calc(100vh - 2.5rem);
+	display: grid;
+	place-content: center;
+	gap: 1rem;
+}
+
+.mode_row {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.mode_row button,
+.form button,
+.form input {
+	font: inherit;
+}
+
+.mode_row button,
+.form button {
+	padding: 0.7rem 1rem;
+	border: 1px solid #111111;
+	background: #ffffff;
+	color: #111111;
+}
+
+.is_active {
+	background: #111111 !important;
+	color: #ffffff !important;
+}
+
+.form {
+	display: grid;
+	gap: 0.75rem;
+	min-width: 280px;
+}
+
+.form input {
+	padding: 0.7rem 0.8rem;
+	border: 1px solid #cfcfcf;
+}
+
+.form p {
+	margin: 0;
+	color: #b42318;
+}
